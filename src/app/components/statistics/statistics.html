@@ -1,0 +1,129 @@
+<!-- Average Height -->
+<div class="modal fade" id="averageHeightModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Average Height</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <button class="btn btn-primary" (click)="calculateAverageHeight()">Calculate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Count By Nationality -->
+<div class="modal fade" id="countByNationalityModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Count By Nationality</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="nationalityForm">
+          <label class="form-label">Национальность</label>
+          <select class="form-select" formControlName="nationality">
+            <option value="RUSSIA">Russia</option>
+            <option value="NORTH_KOREA">North Korea</option>
+            <option value="JAPAN">Japan</option>
+          </select>
+        </form>
+        <button class="btn btn-primary mt-3" (click)="countByNationality()">Calculate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Weight Less Than -->
+<div class="modal fade" id="weightLessThanModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Weight Less Than</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="weightForm">
+          <label for="weight" class="form-label">Weight</label>
+          <input id="weight" type="number" class="form-control" formControlName="weight">
+        </form>
+        <button class="btn btn-primary mt-3" (click)="filterByWeight()">Calculate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Percentage By Eye Color -->
+<div class="modal fade" id="percentageByEyeColorModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Percentage By Eye Color</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="eyeColorForm">
+          <label class="form-label">Цвет глаз</label>
+          <select class="form-select" formControlName="eyeColor">
+            <option value="RED">Red</option>
+            <option value="YELLOW">Yellow</option>
+            <option value="ORANGE">Orange</option>
+            <option value="WHITE">White</option>
+            <option value="BROWN">Brown</option>
+          </select>
+        </form>
+        <button class="btn btn-primary mt-3" (click)="percentageByEyeColor()">Calculate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Count By Hair And Location -->
+<div class="modal fade" id="countByHairAndLocationModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Count By Hair And Location</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="hairAndLocationForm">
+          <label class="form-label">Цвет волос</label>
+          <select class="form-select" formControlName="hairColor">
+            <option value="RED">Red</option>
+            <option value="YELLOW">Yellow</option>
+            <option value="ORANGE">Orange</option>
+            <option value="WHITE">White</option>
+            <option value="BROWN">Brown</option>
+          </select>
+
+          <div formGroupName="location" class="mt-3">
+            <h6>Локация</h6>
+
+            <div class="row">
+              <div class="col-md-3">
+                <label class="form-label">X</label>
+                <input type="number" class="form-control" formControlName="x">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Y</label>
+                <input type="number" class="form-control" formControlName="y">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Z</label>
+                <input type="number" class="form-control" formControlName="z">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Название</label>
+                <input type="text" class="form-control" formControlName="name" placeholder="Название локации">
+              </div>
+            </div>
+          </div>
+        </form>
+        <button class="btn btn-primary mt-3" (click)="countByHairAndLocation()">Calculate</button>
+      </div>
+    </div>
+  </div>
+</div>
