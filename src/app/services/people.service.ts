@@ -8,6 +8,7 @@ import {Color, Country, Person, Location} from '../interfaces/IPerson';
 })
 export class PeopleService {
   private API_URL = 'http://localhost:44044/IS-Lab1-1.0-SNAPSHOT/api/people'
+  // private API_URL = 'http://localhost:8080/IS-Lab1-1.0-SNAPSHOT/api/people'
 
   private selectedPersonSubject = new BehaviorSubject<Person | null>(null);
   selectedPerson$ = this.selectedPersonSubject.asObservable();
@@ -72,6 +73,10 @@ export class PeopleService {
   /** Выбрать текущего человека (для редактирования в модалке) */
   setSelectedPerson(person: Person | null): void {
     this.selectedPersonSubject.next(person);
+  }
+
+  importPeople(people: any[]): Observable<any> {
+    return this.http.post<any>(`${this.API_URL}/import`, people);
   }
 
 }

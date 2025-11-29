@@ -30,7 +30,7 @@ export class PeopleTable implements OnInit {
   sortField = '';
 
   // пагинация
-  pageSize = 2;
+  pageSize = 3;
   currentPage = 1;
 
   // удаление и перепривязка

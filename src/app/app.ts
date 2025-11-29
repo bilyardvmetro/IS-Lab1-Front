@@ -27,8 +27,9 @@ export class App {
       countByNationality: '#countByNationalityModal',
       weightLessThan: '#weightLessThanModal',
       percentageByEyeColor: '#percentageByEyeColorModal',
-      countByHairAndLocation: '#countByHairAndLocationModal'
-    };
+      countByHairAndLocation: '#countByHairAndLocationModal',
+      import: '#importModal'
+     };
 
     const id = modalIdMap[type];
     if (id) {

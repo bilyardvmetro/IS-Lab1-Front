@@ -40,6 +40,11 @@ export class Statistics {
 
   statsResults: any = {};
 
+  selectedImportFile: File | null = null;
+  importInProgress = false;
+  importResultMessage = '';
+  importErrors: string[] = [];
+
   constructor(private fb: FormBuilder) {
     this.nationalityForm = this.fb.group({nationality: ['', [Validators.required]]});
     this.weightForm = this.fb.group({weight: ['', [Validators.min(1)]]});
@@ -101,5 +106,81 @@ export class Statistics {
       this.statsChanged.emit(this.statsResults);
     })
   }
+
+  onImportFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedImportFile = input.files[0];
+      this.importResultMessage = '';
+      this.importErrors = [];
+    } else {
+      this.selectedImportFile = null;
+    }
+  }
+
+  runImport() {
+    if (!this.selectedImportFile || this.importInProgress) {
+      return;
+    }
+
+    this.importInProgress = true;
+    this.importResultMessage = '';
+    this.importErrors = [];
+
+    const fileReader = new FileReader();
+
+    fileReader.onload = () => {
+      try {
+        const text = fileReader.result as string;
+        const data = JSON.parse(text);
+
+        if (!Array.isArray(data)) {
+          throw new Error('Корневой элемент JSON должен быть массивом объектов Person.');
+        }
+
+        this.personService.importPeople(data).subscribe({
+          next: (response: any) => {
+            // ожидаем формат, который мы сделали на бэке:
+            // { status: 'OK', imported: number } или
+            // { status: 'ERROR', errors: string[] }
+            if (response?.status === 'OK') {
+              this.importResultMessage = `Успешно импортировано объектов: ${response.imported}.`;
+              this.importErrors = [];
+            } else if (response?.status === 'ERROR') {
+              this.importResultMessage = 'Ошибки при импорте объектов.';
+              this.importErrors = response.errors ?? [];
+            } else {
+              this.importResultMessage = 'Неожиданный ответ сервера при импорте.';
+            }
+          },
+          error: (err) => {
+            // на бэке при 400 мы возвращаем JSON с errors
+            if (err.error?.errors) {
+              this.importResultMessage = 'Ошибки при импорте объектов.';
+              this.importErrors = err.error.errors;
+            } else {
+              this.importResultMessage = 'Ошибка при запросе к серверу.';
+            }
+          },
+          complete: () => {
+            this.importInProgress = false;
+          }
+        });
+
+      } catch (e: any) {
+        this.importInProgress = false;
+        this.importResultMessage = 'Ошибка чтения или разбора JSON файла.';
+        this.importErrors = [e?.message ?? String(e)];
+      }
+    };
+
+    fileReader.onerror = () => {
+      this.importInProgress = false;
+      this.importResultMessage = 'Ошибка чтения файла.';
+    };
+
+    fileReader.readAsText(this.selectedImportFile, 'utf-8');
+  }
+
 
 }

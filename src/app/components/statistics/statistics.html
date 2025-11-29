@@ -127,3 +127,89 @@
     </div>
   </div>
 </div>
+
+<!-- Import From JSON -->
+<div class="modal fade" id="importModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Import People From JSON</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-2">
+          Выберите JSON-файл с массивом объектов <code>Person</code>.
+        </p>
+
+        <p class="small text-muted mb-2">
+          Формат (корневой элемент — массив):
+        </p>
+
+        <pre class="small bg-light p-2 rounded mb-3"><code>[
+  &#123;
+    "name": "Иван",
+    "coordinates": &#123; "x": 10, "y": 15.5 &#125;,
+    "eyeColor": "BROWN",
+    "hairColor": "RED",
+    "location": &#123;
+      "x": 1.5,
+      "y": 2.5,
+      "z": 3.0,
+      "name": "Санкт-Петербург"
+    &#125;,
+    "height": 180,
+    "weight": 75,
+    "passportID": "1234 567890",
+    "nationality": "RUSSIA"
+  &#125;
+]</code>
+        </pre>
+
+        <div class="mb-3">
+          <label for="importFile" class="form-label">JSON файл</label>
+          <input id="importFile" type="file" class="form-control" accept="application/json,.json"
+                 (change)="onImportFileSelected($event)"/>
+        </div>
+
+        @if (selectedImportFile) {
+          <div class="mb-2">
+            <span class="badge bg-secondary">
+              {{ selectedImportFile.name }}
+            </span>
+          </div>
+        }
+
+        @if (importResultMessage) {
+          <div class="alert mt-3" [class.alert-danger]="importErrors?.length"
+               [class.alert-success]="!importErrors?.length">
+            <div>{{ importResultMessage }}</div>
+
+            @if (importErrors?.length) {
+              <ul class="mt-2 mb-0 small">
+                @for (err of importErrors; track $index) {
+                  <li>{{ err }}</li>
+                }
+              </ul>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Закрыть
+        </button>
+
+        <button type="button" class="btn btn-primary" [disabled]="!selectedImportFile || importInProgress"
+                (click)="runImport()">
+          @if (importInProgress) {
+            <span>Импортируем...</span>
+          } @else {
+            <span>Импортировать</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
