@@ -213,3 +213,192 @@
     </div>
   </div>
 </div>
+
+<!-- Register -->
+<div class="modal fade" id="registerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Register</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control" formControlName="username" placeholder="Username">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" formControlName="password" placeholder="Password">
+          </div>
+
+          <button type="submit" class="btn btn-primary" [disabled]="registerInProgress || registerForm.invalid">
+            @if (registerInProgress) {
+              <span>Registering...</span>
+            } @else {
+              <span>Register</span>
+            }
+          </button>
+        </form>
+
+        @if (authMessage) {
+          <div class="alert alert-success mt-3">
+            {{ authMessage }}
+          </div>
+        }
+
+        @if (authError) {
+          <div class="alert alert-danger mt-3">
+            {{ authError }}
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Login -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Login</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" class="form-control" formControlName="username" placeholder="Username">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" formControlName="password" placeholder="Password">
+          </div>
+
+          <button type="submit" class="btn btn-primary" [disabled]="loginInProgress || loginForm.invalid">
+            @if (loginInProgress) {
+              <span>Logging in...</span>
+            } @else {
+              <span>Login</span>
+            }
+          </button>
+
+          @if (currentUser) {
+            <button type="button" class="btn btn-outline-secondary ms-2" (click)="logout()">
+              Logout ({{ currentUser.username }})
+            </button>
+          }
+        </form>
+
+        @if (authMessage) {
+          <div class="alert alert-success mt-3">
+            {{ authMessage }}
+          </div>
+        }
+
+        @if (authError) {
+          <div class="alert alert-danger mt-3">
+            {{ authError }}
+          </div>
+        }
+
+        @if (currentUser) {
+          <div class="mt-3 small text-muted">
+            Role: {{ currentUser.role }}
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Import History -->
+<div class="modal fade" id="importHistoryModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Import History</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        @if (currentUser) {
+
+          <p class="small text-muted">
+            @if (currentUser.role === 'ADMIN') {
+              Вы администратор и видите историю всех операций импорта.
+            } @else {
+              Вы видите историю только своих операций импорта.
+            }
+          </p>
+
+          <button class="btn btn-primary mb-3"
+                  (click)="loadImportHistory()"
+                  [disabled]="importHistoryLoading">
+            @if (importHistoryLoading) {
+              <span>Loading...</span>
+            } @else {
+              <span>Reload History</span>
+            }
+          </button>
+
+          @if (importHistoryError) {
+            <div class="alert alert-danger">
+              {{ importHistoryError }}
+            </div>
+          }
+
+          @if (!importHistoryLoading && importHistory.length === 0 && !importHistoryError) {
+            <div class="text-muted">
+              Нет записей истории импортов.
+            </div>
+          }
+
+          @if (importHistory.length > 0) {
+            <div class="table-responsive">
+              <table class="table table-sm table-striped align-middle">
+                <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Started</th>
+                  <th>Finished</th>
+                  <th>User</th>
+                  <th>Status</th>
+                  <th>Imported</th>
+                  <th>Errors</th>
+                </tr>
+                </thead>
+                <tbody>
+                  @for (item of importHistory; track item.id) {
+                    <tr>
+                      <td>{{ item.id }}</td>
+                      <td>{{ item.startedAt }}</td>
+                      <td>{{ item.finishedAt || '-' }}</td>
+                      <td>{{ item.username }}</td>
+                      <td>{{ item.status }}</td>
+                      <td>{{ item.importedCount }}</td>
+                      <td>{{ item.errorCount }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+        } @else {
+          <div class="alert alert-warning">
+            Для просмотра истории импортов необходимо войти в систему.
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+

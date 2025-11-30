@@ -2,18 +2,20 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Color, Country, Person, Location} from '../interfaces/IPerson';
+import { AuthService } from './auth.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class PeopleService {
-  private API_URL = 'http://localhost:44044/IS-Lab1-1.0-SNAPSHOT/api/people'
-  // private API_URL = 'http://localhost:8080/IS-Lab1-1.0-SNAPSHOT/api/people'
+  // private API_URL = 'http://localhost:44044/IS-Lab1-1.0-SNAPSHOT/api/people'
+  private API_URL = 'http://localhost:8080/IS-Lab1-1.0-SNAPSHOT/api/people'
 
   private selectedPersonSubject = new BehaviorSubject<Person | null>(null);
   selectedPerson$ = this.selectedPersonSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private auth: AuthService) {
   }
 
   getAll(): Observable<Person[]> {
@@ -76,7 +78,8 @@ export class PeopleService {
   }
 
   importPeople(people: any[]): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/import`, people);
+    const headers = this.auth.getAuthHeaders(); // даст X-Auth-Token если есть
+    return this.http.post<any>(`${this.API_URL}/import`, people, { headers });
   }
 
 }

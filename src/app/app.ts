@@ -28,6 +28,9 @@ export class App {
       weightLessThan: '#weightLessThanModal',
       percentageByEyeColor: '#percentageByEyeColorModal',
       countByHairAndLocation: '#countByHairAndLocationModal',
+      register: '#registerModal',
+      login: '#loginModal',
+      importHistory: '#importHistoryModal',
       import: '#importModal'
      };
 

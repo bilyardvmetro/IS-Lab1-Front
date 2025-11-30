@@ -8,6 +8,9 @@ import {
   Validators
 } from '@angular/forms';
 import {PeopleService} from '../../services/people.service';
+import {AuthService, CurrentUser} from '../../services/auth.service';
+import {ImportHistoryEntry, ImportHistoryService} from '../../services/import-history.service';
+
 
 declare const bootstrap: any;
 
@@ -45,6 +48,25 @@ export class Statistics {
   importResultMessage = '';
   importErrors: string[] = [];
 
+  // auth
+  currentUser: CurrentUser | null = null;
+
+  loginForm: FormGroup;
+  registerForm: FormGroup;
+
+  authError = '';
+  authMessage = '';
+  loginInProgress = false;
+  registerInProgress = false;
+
+  // import history
+  importHistory: ImportHistoryEntry[] = [];
+  importHistoryLoading = false;
+  importHistoryError = '';
+
+  private authService = inject(AuthService);
+  private importHistoryService = inject(ImportHistoryService);
+
   constructor(private fb: FormBuilder) {
     this.nationalityForm = this.fb.group({nationality: ['', [Validators.required]]});
     this.weightForm = this.fb.group({weight: ['', [Validators.min(1)]]});
@@ -58,6 +80,30 @@ export class Statistics {
         name: ['']
       })
     }, {validators: locationValidator})
+
+    this.loginForm = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(4)]],
+    });
+
+    this.registerForm = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(4)]],
+    });
+
+    // подписка на текущего юзера
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+
+      if (user) {
+        // залогинились или восстановили с токена — грузим историю
+        this.loadImportHistory();
+      } else {
+        // разлогинились — чистим историю
+        this.importHistory = [];
+        this.importHistoryError = '';
+      }
+    });
   }
 
   @Output() statsChanged = new EventEmitter<any>();
@@ -180,6 +226,89 @@ export class Statistics {
     };
 
     fileReader.readAsText(this.selectedImportFile, 'utf-8');
+  }
+
+  submitRegister() {
+    if (this.registerForm.invalid || this.registerInProgress) {
+      return;
+    }
+
+    this.registerInProgress = true;
+    this.authError = '';
+    this.authMessage = '';
+
+    const {username, password} = this.registerForm.value;
+
+    this.authService.register(username, password).subscribe({
+      next: user => {
+        this.authMessage = `Пользователь "${user.username}" успешно зарегистрирован. Теперь можно войти.`;
+        this.authError = '';
+      },
+      error: err => {
+        this.authMessage = '';
+        this.authError = err?.error?.message || 'Ошибка регистрации.';
+      },
+      complete: () => {
+        this.registerInProgress = false;
+      }
+    });
+  }
+
+  submitLogin() {
+    if (this.loginForm.invalid || this.loginInProgress) {
+      return;
+    }
+
+    this.loginInProgress = true;
+    this.authError = '';
+    this.authMessage = '';
+
+    const {username, password} = this.loginForm.value;
+
+    this.authService.login(username, password).subscribe({
+      next: user => {
+        this.authMessage = `Вход выполнен. Текущий пользователь: ${user.username} (${user.role}).`;
+        this.authError = '';
+
+        // можно по желанию закрыть модалку через bootstrap.Modal
+        const el = document.getElementById('loginModal');
+        if (el) {
+          const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+          modal.hide();
+        }
+      },
+      error: err => {
+        this.authMessage = '';
+        this.authError = err?.error?.message || 'Ошибка входа.';
+      },
+      complete: () => {
+        this.loginInProgress = false;
+      }
+    });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.authMessage = 'Вы вышли из системы.';
+    this.authError = '';
+  }
+
+  loadImportHistory() {
+    this.importHistoryLoading = true;
+    this.importHistoryError = '';
+    this.importHistory = [];
+
+    this.importHistoryService.getHistory().subscribe({
+      next: history => {
+        this.importHistory = history;
+      },
+      error: err => {
+        this.importHistoryError = err?.error?.message || 'Ошибка загрузки истории импортов.';
+      },
+      complete: () => {
+        this.importHistoryLoading = false;
+      }
+    });
   }
 
 
