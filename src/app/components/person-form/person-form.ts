@@ -47,6 +47,7 @@ export class PersonForm implements OnInit{
       nationality: ['', [Validators.required]],
       hairColor: ['', [Validators.required]],
       eyeColor: ['', [Validators.required]],
+      serialNumber: ['', Validators.required],
       passportID: [''],
 
       coordinates: this.fb.group({

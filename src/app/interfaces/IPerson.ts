@@ -1,6 +1,7 @@
 export interface Person {
   id?: number
   name: string
+  serialNumber: string
   coordinates: Coordinates
   eyeColor: Color
   hairColor: Color

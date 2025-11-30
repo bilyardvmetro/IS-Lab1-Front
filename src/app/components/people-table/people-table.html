@@ -40,6 +40,7 @@
       <tr>
         <th (click)="sortBy('id')">ID</th>
         <th (click)="sortBy('name')">Имя</th>
+        <th>Серийный номер</th>
         <th (click)="sortBy('height')">Рост</th>
         <th (click)="sortBy('weight')">Вес</th>
         <th (click)="sortBy('nationality')">Национальность</th>
@@ -63,6 +64,7 @@
           <tr (dblclick)="openEdit(p)" (contextmenu)="openReassignModal($event, p)">
             <td>{{ p.id }}</td>
             <td>{{ p.name }}</td>
+            <td>{{ p.serialNumber }}</td>
             <td>{{ p.height }}</td>
             <td>{{ p.weight }}</td>
             <td>{{ p.nationality }}</td>
